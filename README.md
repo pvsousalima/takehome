@@ -2,14 +2,46 @@
 
 Challenge: A directory contains multiple files and directories of non-uniform file and directory names. Create a program that traverses a base directory and creates an index file that can be used to quickly lookup files by name, size, and content type.
 
-# Instructions
+## Running application
+![Alt text](application.png)
 
-Fork this repository and implement the above requirements. The result must be an application that implements both the index and search features. Use your best judgement as to the interface that is used to use the index and search features, but remember that this is meant to create a dialog during the interview process, not be something that would be used in production.
+## Prerequisites
+Before using this project, make sure you have the following prerequisites installed on your system:
 
-Feel free to use the language, libraries, and tools that you are most comfortable in and best reflect your ability to translate requirements into a functional implementation.
+- Python 3.x
+- Pip (Python package manager)
 
-Once the project is implemented, remove the `# Instructions` section of this readme and add the section `# Usage` with instructions on how to run the produced application.
+## Installation
 
-The `test_data` directory in this project contains files and directories that can be used to test your implementation.
+1. Run a virtual environment box:
 
-Good luck.
+   ```python
+   # Create a virtual environment
+    python -m venv venv
+
+    # Activate the virtual environment (Windows)
+    venv\Scripts\activate
+
+    # Activate the virtual environment (macOS/Linux)
+    source venv/bin/activate
+   ```
+
+2. Install all required libraries
+
+    ```bash
+    pip install -r requirements.txt
+	 ```
+
+## Usage
+
+1. (Optional) Set BASE_DIRECTORY environment variable to pass a different path to index:
+
+    ```bash
+    export BASE_DIRECTORY=/path/to/custom_directory
+    ```
+
+2. Execute entrypoint file:
+
+    ```bash
+    python main.py
+	```

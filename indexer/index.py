@@ -1,6 +1,5 @@
 import os
 import mimetypes
-from multiprocessing import Pool
 import pyarrow as pa
 import pyarrow.parquet as pq
 from rich import print
@@ -33,16 +32,11 @@ class FileIndexer:
 
     def create_index(self):
         try:
-            # Create a Pool of worker processes
-            with Pool() as pool:
-                # Get file information from directories in parallel
-                results = pool.map(self.process_directory, [self.base_dir])
-
-            # Flatten the results list
-            file_info_list = [info for sublist in results for info in sublist]
+            # Get file information from the base directory
+            results = self.process_directory(self.base_dir)
 
             # Unzip the results into separate lists for each column
-            file_names, file_sizes, content_types = zip(*file_info_list)
+            file_names, file_sizes, content_types = zip(*results)
 
             # Create a schema
             schema = pa.schema([
@@ -68,3 +62,4 @@ class FileIndexer:
 
         except Exception as e:
             print(f"An error occurred: {e}")
+
