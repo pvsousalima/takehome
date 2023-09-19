@@ -1,0 +1,7 @@
+markdown-it-py==3.0.0
+mdurl==0.1.2
+numpy==1.26.0
+pyarrow==13.0.0
+Pygments==2.16.1
+rich==13.5.3
+urwid==2.1.2
