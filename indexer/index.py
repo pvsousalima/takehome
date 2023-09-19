@@ -51,7 +51,7 @@ class FileIndexer:
                 ('Content Type', pa.string())
             ])
 
-            # Create a ParquetWriter
+            # Create a ParquetWriter with BROTLI compression
             with open(self.index_file, 'wb') as sink:
                 with pq.ParquetWriter(sink, schema, compression='BROTLI') as writer:
                     # Write the values directly to the Parquet file
