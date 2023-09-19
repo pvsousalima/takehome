@@ -32,7 +32,7 @@ class FileListApp:
 
         # Create labels for each column
         file_name_label = urwid.Text("File Name")
-        file_size_label = urwid.Text("File Size (MB)")  # Updated label
+        file_size_label = urwid.Text("File Size")
         content_type_label = urwid.Text("Content Type")
 
         # Create columns for column titles
@@ -95,6 +95,11 @@ class FileListApp:
         # Function to handle Enter key press
         def on_change(widget, newtext):
             update_listbox(newtext)
+        
+        # Handles exit
+        def on_exit(key):
+            if key == 'esc':
+                raise urwid.ExitMainLoop()
 
         # Connect the change event of the search bar to the update function
         urwid.connect_signal(search_edit, 'change', on_change)
@@ -112,7 +117,7 @@ class FileListApp:
             ('weight', 9, frame_line),  # Adjust the weights as needed (10% and 90%)
         ])
 
-        self.loop = urwid.MainLoop(body)
+        self.loop = urwid.MainLoop(body, unhandled_input=on_exit)
 
     def run(self):
         self.loop.run()
