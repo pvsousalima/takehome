@@ -1,5 +1,6 @@
 import os
 import mimetypes
+from multiprocessing import Pool
 import pyarrow as pa
 import pyarrow.parquet as pq
 from rich import print
@@ -16,29 +17,32 @@ class FileIndexer:
         content_type, _ = mimetypes.guess_type(path)
         return file_name, file_size, content_type
 
+    def process_directory(self, dir_path):
+        results = []
+        for root, _, files in os.walk(dir_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+
+                # Attempt to get file information, handle FileNotFoundError
+                try:
+                    file_name, file_size, content_type = self.get_file_info(file_path)
+                    results.append((file_name, file_size, content_type))
+                except FileNotFoundError:
+                    print(f"File not found: {file_path}")
+        return results
+
     def create_index(self):
-        # Create empty arrays for each column
-        file_names = pa.array([], type=pa.string())
-        file_sizes = pa.array([], type=pa.int64())
-        content_types = pa.array([], type=pa.string())
-
         try:
-            # Traverse the base directory
-            for root, dirs, files in os.walk(self.base_dir):
-                for file in files:
-                    file_path = os.path.join(root, file)
+            # Create a Pool of worker processes
+            with Pool() as pool:
+                # Get file information from directories in parallel
+                results = pool.map(self.process_directory, [self.base_dir])
 
-                    # Attempt to get file information, handle FileNotFoundError
-                    try:
-                        file_name, file_size, content_type = self.get_file_info(file_path)
+            # Flatten the results list
+            file_info_list = [info for sublist in results for info in sublist]
 
-                        # Append file information to arrays
-                        file_names = pa.concat_arrays([file_names, pa.array([file_name], type=pa.string())])
-                        file_sizes = pa.concat_arrays([file_sizes, pa.array([file_size], type=pa.int64())])
-                        content_types = pa.concat_arrays([content_types, pa.array([content_type], type=pa.string())])
-
-                    except FileNotFoundError:
-                        print(f"File not found: {file_path}")
+            # Unzip the results into separate lists for each column
+            file_names, file_sizes, content_types = zip(*file_info_list)
 
             # Create a schema
             schema = pa.schema([
@@ -64,4 +68,3 @@ class FileIndexer:
 
         except Exception as e:
             print(f"An error occurred: {e}")
-
