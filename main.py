@@ -74,33 +74,35 @@ def update_listbox(new_edit_text):
     for file_columns in file_widgets[1:]:
         filename, filesize, content_type = file_columns.contents
         filename_text = filename[0].text.lower()
+        filesize_text = filesize[0].text.lower()
+        content_type_text = content_type[0].text.lower()
         search_text = new_edit_text.lower()
 
-        if search_text in filename_text:
+        # Check if search_text is in any of the three elements using an "OR" condition
+        if search_text in filename_text or search_text in filesize_text or search_text in content_type_text:
             list_walker.append(file_columns)
 
-debug = urwid.Text('')
-
 # Function to handle Enter key press
-def on_enter(widget, newtext):
-    # print(widget, key)
-    search_text = search_edit.get_edit_text()
-    # print(search_text)
-    update_listbox(search_text)
-    debug.set_text("Edit widget changed to %s" % newtext)
-    pass
+def on_change(widget, newtext):
+    update_listbox(newtext)
 
 # Connect the change event of the search bar to the update function
-urwid.connect_signal(search_edit, 'change', on_enter)
+urwid.connect_signal(search_edit, 'change', on_change)
+# urwid.connect_signal(search_edit, 'keypress')
 
-# Create a Frame to add a header (optional)
+# Create a Frame to add a header 
 frame = urwid.Frame(listbox)
 
+search_line = urwid.LineBox(urwid.AttrMap(urwid.Filler(search_edit, valign='top'), 'search_bar'))
+
+# Create a LineBox for the frame that takes up 90% of the screen
+frame_line = urwid.LineBox(frame)
+
 body = urwid.Pile([
-    # urwid.Filler(debug),
-    urwid.LineBox(urwid.AttrMap(urwid.Filler(search_edit, valign='bottom'), 'search_bar')),
-    urwid.LineBox(frame),
+    ('weight', 0.5, search_line),
+    ('weight', 9, frame_line),  # Adjust the weights as needed (10% and 90%)
 ])
+
 
 loop = urwid.MainLoop(body)
 loop.run()
